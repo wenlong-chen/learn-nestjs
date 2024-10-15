@@ -3,14 +3,17 @@ import { INestApplication } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import { AppModule } from '../src/app/app.module';
+import { AppModule, dynamicModules } from '../src/app/app.module';
 
 describe('UserController', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
+      imports: [AppModule],
+    })
+      .overrideModule(dynamicModules['TypeOrmModule'])
+      .useModule(
         TypeOrmModule.forRootAsync({
           useFactory: () => {
             return {
@@ -21,9 +24,8 @@ describe('UserController', () => {
             };
           },
         }),
-        AppModule,
-      ],
-    }).compile();
+      )
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
