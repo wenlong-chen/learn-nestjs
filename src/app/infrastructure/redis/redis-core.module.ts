@@ -1,7 +1,6 @@
 import type { DynamicModule, OnModuleDestroy } from '@nestjs/common';
 import { Global, Module, Inject } from '@nestjs/common';
-import each from 'lodash/each';
-import isArray from 'lodash/isArray';
+import { isArray, each } from 'lodash';
 
 import {
   createAsyncClientOptions,

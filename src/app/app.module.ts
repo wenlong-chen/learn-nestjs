@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserModule } from './domain/user/user.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
+import { BullModule } from "@nestjs/bull";
 
 export const dynamicModules: Record<
-  'ConfigModule' | 'RedisModule' | 'TypeOrmModule',
+  'ConfigModule' | 'RedisModule' | 'TypeOrmModule' | 'BullModule',
   DynamicModule
 > = {
   ConfigModule: ConfigModule.forRoot({
@@ -70,6 +71,17 @@ export const dynamicModules: Record<
       },
     }),
   }),
+  BullModule: BullModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: async (configService: ConfigService) => ({
+      redis: {
+        host: configService.get<string>('REDIS_HOST', 'localhost'),
+        port: configService.get<number>('REDIS_PORT', 6379),
+        tls: configService.get<string | undefined>('REDIS_TLS') ? {} : undefined,
+      },
+    }),
+    inject: [ConfigService],
+  }),
 };
 
 @Module({
@@ -77,6 +89,7 @@ export const dynamicModules: Record<
     dynamicModules['ConfigModule'],
     dynamicModules['RedisModule'],
     dynamicModules['TypeOrmModule'],
+    dynamicModules['BullModule'],
     UserModule,
   ],
 })

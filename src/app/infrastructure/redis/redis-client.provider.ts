@@ -1,7 +1,6 @@
 import type { Provider } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import isArray from 'lodash/isArray';
-import map from 'lodash/map';
+import { isArray, map } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import { REDIS_CLIENT, REDIS_MODULE_OPTIONS } from './redis.constants';
@@ -40,7 +39,6 @@ export const createClient = (): Provider => ({
     const clients = new Map<string, Redis>();
     let defaultKey = uuidv4();
 
-    console.log('isArray=', map);
     if (isArray(options)) {
       await Promise.all(
         map(options, async (o) => {

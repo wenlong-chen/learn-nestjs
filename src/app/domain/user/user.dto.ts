@@ -5,3 +5,7 @@ export class UserDTO {
   uuidColumn: string;
   booleanColumn: boolean;
 }
+
+export class ListDTO {
+  number: number;
+}
