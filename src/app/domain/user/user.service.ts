@@ -1,14 +1,17 @@
-import { Injectable, Param } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
-import { UserDTO } from "./user.dto";
+import { UserDTO } from './user.dto';
+import { RedisService } from '../../infrastructure/redis/redis.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @Inject(RedisService)
+    private readonly redisService: RedisService,
   ) {}
   getHello(): string {
     return 'Hello World!';
