@@ -1,9 +1,18 @@
 // eslint-disable @typescript-eslint/no-unused-vars
 // eslint-disable @typescript-eslint/no-explicit-any
-import { Job, JobCounts, JobId, JobInformation, JobOptions, JobStatus, JobStatusClean, Queue } from "bull";
-import { EventEmitter } from "events";
-import Redis, { Pipeline } from "ioredis";
-import { isString } from "lodash";
+import {
+  Job,
+  JobCounts,
+  JobId,
+  JobInformation,
+  JobOptions,
+  JobStatus,
+  JobStatusClean,
+  Queue,
+} from 'bull';
+import { EventEmitter } from 'events';
+import Redis, { Pipeline } from 'ioredis';
+import { isString } from 'lodash';
 
 export class QueueMock<T> implements Queue<T> {
   private closed = false;
