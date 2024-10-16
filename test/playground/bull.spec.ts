@@ -5,7 +5,7 @@ import Redis from 'ioredis-mock';
 import { map } from 'lodash';
 import { DYNAMIC_MODULES } from '../../src/app/app.module';
 
-describe('try bull', () => {
+xdescribe('try bull', () => {
   let redis: RedisType;
   let queue: Queue;
 

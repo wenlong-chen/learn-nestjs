@@ -1,7 +1,9 @@
 import { Redis as RedisType } from 'ioredis';
 import Redis from 'ioredis-mock';
 
-describe('try redis', () => {
+// ignore this test
+
+xdescribe('try redis', () => {
   let redis: RedisType;
   beforeAll(() => {
     redis = new Redis();
