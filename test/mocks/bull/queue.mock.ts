@@ -1,15 +1,9 @@
-import {
-  Job,
-  JobCounts,
-  JobId,
-  JobInformation,
-  JobOptions,
-  JobStatus,
-  JobStatusClean,
-  Queue,
-} from 'bull';
-import { EventEmitter } from 'events';
-import Redis, { Pipeline } from 'ioredis';
+// eslint-disable @typescript-eslint/no-unused-vars
+// eslint-disable @typescript-eslint/no-explicit-any
+import { Job, JobCounts, JobId, JobInformation, JobOptions, JobStatus, JobStatusClean, Queue } from "bull";
+import { EventEmitter } from "events";
+import Redis, { Pipeline } from "ioredis";
+import { isString } from "lodash";
 
 export class QueueMock<T> implements Queue<T> {
   private closed = false;
@@ -55,6 +49,11 @@ export class QueueMock<T> implements Queue<T> {
   }
 
   async add(name: unknown, data?: unknown, opts?: unknown): Promise<Job<T>> {
+    if (!isString(name)) {
+      opts = data;
+      data = name;
+      name = JobMock.DEFAULT_JOB_NAME;
+    }
     if (!data) {
       opts = {};
       data = name;
@@ -212,17 +211,11 @@ export class QueueMock<T> implements Queue<T> {
     type: unknown,
     start?: unknown,
     end?: unknown,
-  ):
-    | Promise<{
-        meta: { count: number; prevTS: number; prevCount: number };
-        data: number[];
-        count: number;
-      }>
-    | Promise<{
-        meta: { count: number; prevTS: number; prevCount: number };
-        data: number[];
-        count: number;
-      }> {
+  ): Promise<{
+    meta: { count: number; prevTS: number; prevCount: number };
+    data: number[];
+    count: number;
+  }> {
     throw new Error('Method not implemented.');
   }
   getJobLogs(

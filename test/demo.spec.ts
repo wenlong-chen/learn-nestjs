@@ -7,12 +7,20 @@ import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import { AppModule, DYNAMIC_MODULES } from '../src/app/app.module';
 import { RedisService } from '../src/app/infrastructure/redis/redis.service';
+import { getQueueToken } from '@nestjs/bull';
+import { CAT_QUEUE } from '../src/app/domain/cat/cat.const';
+import { QueueMock } from './mocks/bull/queue.mock';
+import { Queue } from 'bull';
 
-describe('UserController', () => {
+describe('Demo Test', () => {
   let app: INestApplication;
   let redis: RedisType;
+  let queue: Queue;
+
   beforeAll(async () => {
     redis = new Redis();
+    queue = new QueueMock(CAT_QUEUE);
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
@@ -33,6 +41,8 @@ describe('UserController', () => {
       .useValue({
         getClient: () => redis,
       })
+      .overrideProvider(getQueueToken(CAT_QUEUE))
+      .useValue(queue)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -40,6 +50,7 @@ describe('UserController', () => {
   });
 
   afterAll(async () => {
+    await queue.close();
     await app.close();
   });
 
@@ -110,6 +121,20 @@ describe('UserController', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['bar', 'foo']);
+      });
+  });
+
+  it('POST /cats: create cat', () => {
+    const queueAddSpy = jest.spyOn(queue, 'add');
+    return request(app.getHttpServer())
+      .post('/cats?name=garfield')
+      .expect(201)
+      .expect((res) => {
+        expect(res.text).toEqual('garfield');
+        expect(queueAddSpy).toHaveBeenCalledWith(
+          { name: 'garfield' },
+          { delay: 5000 },
+        );
       });
   });
 });
