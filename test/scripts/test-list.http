@@ -1,8 +1,0 @@
-### Get list len
-GET http://localhost:3001/cache
-
-### Add element to list
-POST http://localhost:3001/cache?name=tom
-
-### Get list len
-GET http://localhost:3001/cache

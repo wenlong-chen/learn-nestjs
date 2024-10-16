@@ -5,7 +5,7 @@ import { Redis as RedisType } from 'ioredis';
 import Redis from 'ioredis-mock';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
-import { AppModule, dynamicModules } from '../src/app/app.module';
+import { AppModule, DYNAMIC_MODULES } from '../src/app/app.module';
 import { RedisService } from "../src/app/infrastructure/redis/redis.service";
 
 describe('UserController', () => {
@@ -16,7 +16,7 @@ describe('UserController', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideModule(dynamicModules['TypeOrmModule'])
+      .overrideModule(DYNAMIC_MODULES['TypeOrmModule'])
       .useModule(
         TypeOrmModule.forRootAsync({
           useFactory: () => {

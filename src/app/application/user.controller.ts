@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { UserService } from '../domain/user/user.service';
 import { UserDTO } from '../domain/user/user.dto';
@@ -47,5 +47,4 @@ export class UserController {
   async cachedUsers(): Promise<string[]> {
     return await this.userService.cachedUsers();
   }
-
 }

@@ -1,0 +1,17 @@
+### Get cache
+GET http://localhost:3001/cache
+
+### Add element to cache
+POST http://localhost:3001/cache?name=tom
+
+### Get cache
+GET http://localhost:3001/cache
+
+### Enqueue cat
+POST http://localhost:3001/cats?name=fluffy
+
+### Enqueue cat
+POST http://localhost:3001/cats?name=garfield
+
+### Get cats
+GET http://localhost:3001/cats

@@ -1,12 +1,13 @@
-import { DynamicModule, Module } from "@nestjs/common";
+import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
 
 import { UserModule } from './domain/user/user.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
-import { BullModule } from "@nestjs/bull";
+import { CatModule } from './domain/cat/cat.module';
 
-export const dynamicModules: Record<
+export const DYNAMIC_MODULES: Record<
   'ConfigModule' | 'RedisModule' | 'TypeOrmModule' | 'BullModule',
   DynamicModule
 > = {
@@ -77,7 +78,9 @@ export const dynamicModules: Record<
       redis: {
         host: configService.get<string>('REDIS_HOST', 'localhost'),
         port: configService.get<number>('REDIS_PORT', 6379),
-        tls: configService.get<string | undefined>('REDIS_TLS') ? {} : undefined,
+        tls: configService.get<string | undefined>('REDIS_TLS')
+          ? {}
+          : undefined,
       },
     }),
     inject: [ConfigService],
@@ -86,11 +89,12 @@ export const dynamicModules: Record<
 
 @Module({
   imports: [
-    dynamicModules['ConfigModule'],
-    dynamicModules['RedisModule'],
-    dynamicModules['TypeOrmModule'],
-    dynamicModules['BullModule'],
+    DYNAMIC_MODULES['ConfigModule'],
+    DYNAMIC_MODULES['RedisModule'],
+    DYNAMIC_MODULES['TypeOrmModule'],
+    DYNAMIC_MODULES['BullModule'],
     UserModule,
+    CatModule,
   ],
 })
 export class AppModule {}

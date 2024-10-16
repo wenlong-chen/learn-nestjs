@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
-import { ListDTO, UserDTO } from "./user.dto";
+import { ListDTO, UserDTO } from './user.dto';
 import { RedisService } from '../../infrastructure/redis/redis.service';
 
 @Injectable()
