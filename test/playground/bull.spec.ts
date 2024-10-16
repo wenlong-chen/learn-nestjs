@@ -1,9 +1,9 @@
 import * as Bull from 'bull';
-import { Queue, Job } from 'bull';
-import { Redis as RedisType, RedisOptions } from 'ioredis';
+import { Job, Queue } from 'bull';
+import { Redis as RedisType } from 'ioredis';
 import Redis from 'ioredis-mock';
 import { map } from 'lodash';
-import { DYNAMIC_MODULES } from "../../src/app/app.module";
+import { DYNAMIC_MODULES } from '../../src/app/app.module';
 
 describe('try bull', () => {
   let redis: RedisType;

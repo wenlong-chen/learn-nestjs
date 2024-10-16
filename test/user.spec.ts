@@ -6,7 +6,7 @@ import Redis from 'ioredis-mock';
 import * as request from 'supertest';
 import { v4 as uuid } from 'uuid';
 import { AppModule, DYNAMIC_MODULES } from '../src/app/app.module';
-import { RedisService } from "../src/app/infrastructure/redis/redis.service";
+import { RedisService } from '../src/app/infrastructure/redis/redis.service';
 
 describe('UserController', () => {
   let app: INestApplication;
@@ -92,7 +92,7 @@ describe('UserController', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['foo']);
-      })
+      });
   });
 
   it('POST /cache: cache second user', () => {
@@ -104,13 +104,12 @@ describe('UserController', () => {
       });
   });
 
-  it("GET /cache: list cached users", () => {
+  it('GET /cache: list cached users', () => {
     return request(app.getHttpServer())
-      .get("/cache")
+      .get('/cache')
       .expect(200)
       .expect((res) => {
-        expect(res.body).toEqual(["bar", "foo"]);
+        expect(res.body).toEqual(['bar', 'foo']);
       });
   });
-
 });

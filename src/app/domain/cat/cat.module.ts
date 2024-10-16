@@ -3,7 +3,7 @@ import { BullModule } from '@nestjs/bull';
 import { CAT_QUEUE } from './cat.const';
 import { CatController } from '../../application/cat.controller';
 import { CatService } from './cat.service';
-import { CatProcessor } from "./cat.processor";
+import { CatProcessor } from './cat.processor';
 
 @Module({
   imports: [BullModule.registerQueue({ name: CAT_QUEUE })],

@@ -18,7 +18,7 @@ export class CatService {
   }
 
   async enqueueCat(name: string) {
-    const job = await this.catQueue.add({ name }, {delay: 5000});
+    const job = await this.catQueue.add({ name }, { delay: 5000 });
     console.log('add job:', job.id);
   }
 
