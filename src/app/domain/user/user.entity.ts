@@ -17,6 +17,9 @@ export class UserEntity {
   @Column({ name: 'json_column', type: 'simple-json' })
   jsonColumn: Record<string, unknown>;
 
+  @Column({ name: 'array_column', type: 'simple-json', array: true })
+  arrayColumn: Record<string, unknown>[];
+
   @Column({ name: 'varchar_column', type: 'varchar' })
   varcharColumn: string;
 
