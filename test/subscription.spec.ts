@@ -66,6 +66,7 @@ describe('Subscription Test', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    // NOTE: must have when using supertestWs
     await app.listen(0, '0.0.0.0');
   });
 
