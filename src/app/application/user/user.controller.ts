@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
-import { UserService } from '../domain/user/user.service';
-import { UserDTO } from '../domain/user/user.dto';
+import { UserService } from '../../domain/user/user.service';
+import { UserDTO } from './user.dto';
+import { CreateUserInput } from "./create-user.input";
 
 @Controller()
 export class UserController {
@@ -17,7 +18,7 @@ export class UserController {
    * @param user
    */
   @Post('/users')
-  async createUser(@Body() user: UserDTO) {
+  async createUser(@Body() user: CreateUserInput) {
     return this.userService.createUser(user);
   }
 
@@ -26,7 +27,7 @@ export class UserController {
    */
   @Get('/users')
   async getUsers() {
-    return this.userService.findAll();
+    return await this.userService.getUsers();
   }
 
   /**
@@ -54,7 +55,7 @@ export class UserController {
    * @param user
    */
   @Post('/users/cache-manager')
-  async cacheUserInCacheManager(@Body() user: UserDTO) {
+  async cacheUserInCacheManager(@Body() user: CreateUserInput) {
     await this.userService.cacheUserInCacheManager(user);
     return { message: 'User cached' };
   }

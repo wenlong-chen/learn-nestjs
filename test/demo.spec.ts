@@ -11,16 +11,18 @@ import { getQueueToken } from '@nestjs/bull';
 import { CAT_QUEUE } from '../src/app/domain/cat/cat.const';
 import { QueueMock } from './mocks/bull/queue.mock';
 import { Queue } from 'bull';
-import { UserDTO } from "../src/app/domain/user/user.dto";
-import { CACHE_MANAGER, Cache } from "@nestjs/cache-manager";
-import { createCache, memoryStore } from "cache-manager";
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { createCache, memoryStore } from 'cache-manager';
+import { CreateUserInput } from '../src/app/application/user/create-user.input';
+import { supertestWs } from 'supertest-graphql';
+import gql from 'graphql-tag';
 
 describe('Demo Test', () => {
   let app: INestApplication;
   let redis: RedisType;
   let cache: Cache;
   let queue: Queue;
-  let user: UserDTO;
+  let user: CreateUserInput;
 
   beforeAll(async () => {
     redis = new Redis();
@@ -29,8 +31,8 @@ describe('Demo Test', () => {
 
     user = {
       name: 'Test User',
-      jsonColumn: {'foo': 'bar'},
-      arrayColumn: [{'foo': 'bar'}, {'foo': 'baz'}],
+      jsonColumn: { foo: 'bar' },
+      arrayColumn: [{ foo: 'bar' }, { foo: 'baz' }],
       varcharColumn: '',
       booleanColumn: false,
       uuidColumn: uuid(),
@@ -71,15 +73,15 @@ describe('Demo Test', () => {
     await app.close();
   });
 
-  it('GET /: hello', () => {
-    return request(app.getHttpServer())
+  it('GET /: hello', async () => {
+    await request(app.getHttpServer())
       .get('/')
       .expect(200)
       .expect('Hello World!');
   });
 
-  it('POST /users: create user', () => {
-    return request(app.getHttpServer())
+  it('Save and get user using orm', async () => {
+    await request(app.getHttpServer())
       .post('/users')
       .send(user)
       .expect(201)
@@ -88,47 +90,40 @@ describe('Demo Test', () => {
         expect(res.body.id).toBeDefined();
         expect(res.body.createdAt).toBeDefined();
       });
-  });
-
-  it('GET /users: get all created users', () => {
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get('/users')
       .expect(200)
       .expect((res) => {
         expect(res.body.length).toEqual(1);
-        expect(res.body).toEqual(expect.arrayContaining([expect.objectContaining(user)]));
+        expect(res.body).toEqual(
+          expect.arrayContaining([expect.objectContaining(user)]),
+        );
       });
   });
 
-  it('POST /cache: cache first user', () => {
-    return request(app.getHttpServer())
+  it('Save and get user using redis', async () => {
+    await request(app.getHttpServer())
       .post('/cache?name=foo')
       .expect(201)
       .expect((res) => {
         expect(res.body).toEqual({ message: 'User cached' });
       });
-  });
 
-  it('GET /cache: list cached users', () => {
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get('/cache')
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['foo']);
       });
-  });
 
-  it('POST /cache: cache second user', () => {
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/cache?name=bar')
       .expect(201)
       .expect((res) => {
         expect(res.body).toEqual({ message: 'User cached' });
       });
-  });
 
-  it('GET /cache: list cached users', () => {
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get('/cache')
       .expect(200)
       .expect((res) => {
@@ -136,18 +131,16 @@ describe('Demo Test', () => {
       });
   });
 
-  it('POST /users/cache-manager: cache user in cache manager', () => {
-    return request(app.getHttpServer())
+  it('Save and get user using cache manager', async () => {
+    await request(app.getHttpServer())
       .post('/users/cache-manager')
       .send(user)
       .expect(201)
       .expect(async (res) => {
         expect(res.body).toEqual({ message: 'User cached' });
       });
-  });
 
-  it('GET /users/cache-manager: get user from cache manager', () => {
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get(`/users/cache-manager?name=${user.name}`)
       .expect(200)
       .expect(async (res) => {
@@ -155,9 +148,9 @@ describe('Demo Test', () => {
       });
   });
 
-  it('POST /cats: create cat', () => {
+  it('Put cat to bull queue', async () => {
     const queueAddSpy = jest.spyOn(queue, 'add');
-    return request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/cats?name=garfield')
       .expect(201)
       .expect((res) => {
@@ -168,4 +161,21 @@ describe('Demo Test', () => {
         );
       });
   });
+
+  it('Query user using graphql', async () => {
+    await request(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        query: `{
+          users {
+            name
+          }
+        }`,
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.users).toEqual([{ name: 'Test User' }]);
+      });
+  });
+
 });

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
-import { CatService } from '../domain/cat/cat.service';
+import { CatService } from '../../domain/cat/cat.service';
 
 @Controller()
 export class CatController {

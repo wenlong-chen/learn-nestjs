@@ -15,3 +15,16 @@ POST http://localhost:3001/cats?name=garfield
 
 ### Get cats
 GET http://localhost:3001/cats
+
+### Create user
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+  "name": "hello",
+  "jsonColumn": {"foo": "bar"},
+  "arrayColumn": [{"foo": "bar"}, {"foo": "baz"}],
+  "varcharColumn": "",
+  "booleanColumn": false,
+  "uuidColumn": "c017d8c5-d9a1-43ee-9e08-ceac8012fee2"
+}

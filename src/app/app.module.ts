@@ -6,9 +6,21 @@ import { BullModule } from '@nestjs/bull';
 import { UserModule } from './domain/user/user.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
 import { CatModule } from './domain/cat/cat.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import GraphQLJSON from 'graphql-type-json';
+import { join } from 'lodash';
+import { CacheModule } from "@nestjs/cache-manager";
+import { RedisOptions } from "ioredis";
+import { redisStore } from "cache-manager-ioredis-yet";
 
 export const DYNAMIC_MODULES: Record<
-  'ConfigModule' | 'RedisModule' | 'TypeOrmModule' | 'BullModule',
+  | 'ConfigModule'
+  | 'RedisModule'
+  | 'TypeOrmModule'
+  | 'BullModule'
+  | 'CacheModule'
+  | 'GraphQLModule',
   DynamicModule
 > = {
   ConfigModule: ConfigModule.forRoot({
@@ -85,6 +97,27 @@ export const DYNAMIC_MODULES: Record<
     }),
     inject: [ConfigService],
   }),
+  CacheModule: CacheModule.registerAsync<RedisOptions>({
+    useFactory: (configService: ConfigService) => ({
+      store: redisStore,
+      host: configService.get<string>('REDIS_HOST'),
+      port: configService.get<number | undefined>('REDIS_PORT'),
+      tls: configService.get<string | undefined>('REDIS_TLS')
+        ? {}
+        : undefined,
+    }),
+    isGlobal: true,
+    imports: [ConfigModule],
+    inject: [ConfigService],
+  }),
+  GraphQLModule: GraphQLModule.forRoot<ApolloDriverConfig>({
+    driver: ApolloDriver,
+    subscriptions: {
+      'graphql-ws': true,
+      'subscriptions-transport-ws': true,
+    },
+    autoSchemaFile: 'schema.gql',
+  }),
 };
 
 @Module({
@@ -93,6 +126,8 @@ export const DYNAMIC_MODULES: Record<
     DYNAMIC_MODULES['RedisModule'],
     DYNAMIC_MODULES['TypeOrmModule'],
     DYNAMIC_MODULES['BullModule'],
+    DYNAMIC_MODULES['CacheModule'],
+    DYNAMIC_MODULES['GraphQLModule'],
     UserModule,
     CatModule,
   ],
