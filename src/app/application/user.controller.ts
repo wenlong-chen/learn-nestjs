@@ -35,7 +35,7 @@ export class UserController {
    */
   @Post('/cache')
   async cacheUser(@Query('name') name: string) {
-    await this.userService.cacheUser(name);
+    await this.userService.cacheUserInRedis(name);
     return { message: 'User cached' };
   }
 
@@ -45,6 +45,27 @@ export class UserController {
    */
   @Get('/cache')
   async cachedUsers(): Promise<string[]> {
-    return await this.userService.cachedUsers();
+    return await this.userService.cachedUsersInRedis();
+  }
+
+  /**
+   * @description Cache a user in cache manager
+   *
+   * @param user
+   */
+  @Post('/users/cache-manager')
+  async cacheUserInCacheManager(@Body() user: UserDTO) {
+    await this.userService.cacheUserInCacheManager(user);
+    return { message: 'User cached' };
+  }
+
+  /**
+   * @description Get a user from cache manager
+   *
+   * @param name
+   */
+  @Get('/users/cache-manager')
+  async getUserFromCacheManager(@Query('name') name: string) {
+    return await this.userService.getUserFromCacheManager(name);
   }
 }

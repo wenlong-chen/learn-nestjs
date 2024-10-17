@@ -12,16 +12,20 @@ import { CAT_QUEUE } from '../src/app/domain/cat/cat.const';
 import { QueueMock } from './mocks/bull/queue.mock';
 import { Queue } from 'bull';
 import { UserDTO } from "../src/app/domain/user/user.dto";
+import { CACHE_MANAGER, Cache } from "@nestjs/cache-manager";
+import { createCache, memoryStore } from "cache-manager";
 
 describe('Demo Test', () => {
   let app: INestApplication;
   let redis: RedisType;
+  let cache: Cache;
   let queue: Queue;
   let user: UserDTO;
 
   beforeAll(async () => {
     redis = new Redis();
     queue = new QueueMock(CAT_QUEUE);
+    cache = createCache(memoryStore());
 
     user = {
       name: 'Test User',
@@ -54,6 +58,8 @@ describe('Demo Test', () => {
       })
       .overrideProvider(getQueueToken(CAT_QUEUE))
       .useValue(queue)
+      .overrideProvider(CACHE_MANAGER)
+      .useValue(cache)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -127,6 +133,25 @@ describe('Demo Test', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['bar', 'foo']);
+      });
+  });
+
+  it('POST /users/cache-manager: cache user in cache manager', () => {
+    return request(app.getHttpServer())
+      .post('/users/cache-manager')
+      .send(user)
+      .expect(201)
+      .expect(async (res) => {
+        expect(res.body).toEqual({ message: 'User cached' });
+      });
+  });
+
+  it('GET /users/cache-manager: get user from cache manager', () => {
+    return request(app.getHttpServer())
+      .get(`/users/cache-manager?name=${user.name}`)
+      .expect(200)
+      .expect(async (res) => {
+        expect(res.body).toEqual(expect.objectContaining(user));
       });
   });
 
