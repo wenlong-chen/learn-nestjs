@@ -14,8 +14,6 @@ import { Queue } from 'bull';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createCache, memoryStore } from 'cache-manager';
 import { CreateUserInput } from '../src/app/application/user/create-user.input';
-import { supertestWs } from 'supertest-graphql';
-import gql from 'graphql-tag';
 
 describe('Demo Test', () => {
   let app: INestApplication;
