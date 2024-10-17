@@ -16,6 +16,7 @@ import { getQueueToken } from '@nestjs/bull';
 import { supertestWs } from "supertest-graphql";
 import gql from "graphql-tag";
 import * as request from "supertest";
+import { UserService } from "../src/app/domain/user/user.service";
 
 describe('Subscription Test', () => {
   let app: INestApplication;
@@ -23,6 +24,7 @@ describe('Subscription Test', () => {
   let cache: Cache;
   let queue: Queue;
   let user: CreateUserInput;
+  let cookie: string;
 
   beforeAll(async () => {
     redis = new Redis();
@@ -68,6 +70,15 @@ describe('Subscription Test', () => {
     await app.init();
     // NOTE: must have when using supertestWs
     await app.listen(0, '0.0.0.0');
+
+    await app.get(UserService).createUser({ ...user, name: 'admin' });
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'admin', password: 'admin' })
+      .expect(201)
+      .then(res => {
+        cookie = res.header['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      });
   });
 
   afterAll(async () => {
@@ -87,6 +98,7 @@ describe('Subscription Test', () => {
 
     await request(app.getHttpServer())
       .post('/users')
+      .set('Cookie', cookie)
       .send({ ...user, name: 'tom' })
       .expect(201)
       .expect((res) => {

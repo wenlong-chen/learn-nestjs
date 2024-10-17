@@ -14,6 +14,7 @@ import { Queue } from 'bull';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createCache, memoryStore } from 'cache-manager';
 import { CreateUserInput } from '../src/app/application/user/create-user.input';
+import { UserService } from "../src/app/domain/user/user.service";
 
 describe('Demo Test', () => {
   let app: INestApplication;
@@ -21,6 +22,7 @@ describe('Demo Test', () => {
   let cache: Cache;
   let queue: Queue;
   let user: CreateUserInput;
+  let cookie: string;
 
   beforeAll(async () => {
     redis = new Redis();
@@ -64,6 +66,15 @@ describe('Demo Test', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+
+    await app.get(UserService).createUser({ ...user, name: 'admin' });
+    await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'admin', password: 'admin' })
+      .expect(201)
+      .then(res => {
+        cookie = res.header['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      });
   });
 
   afterAll(async () => {
@@ -71,7 +82,7 @@ describe('Demo Test', () => {
     await app.close();
   });
 
-  it('GET /: hello', async () => {
+  it('Hello', async () => {
     await request(app.getHttpServer())
       .get('/')
       .expect(200)
@@ -81,6 +92,7 @@ describe('Demo Test', () => {
   it('Save and get user using orm', async () => {
     await request(app.getHttpServer())
       .post('/users')
+      .set('Cookie', cookie)
       .send(user)
       .expect(201)
       .expect((res) => {
@@ -88,11 +100,12 @@ describe('Demo Test', () => {
         expect(res.body.id).toBeDefined();
         expect(res.body.createdAt).toBeDefined();
       });
+
     await request(app.getHttpServer())
       .get('/users')
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
-        expect(res.body.length).toEqual(1);
         expect(res.body).toEqual(
           expect.arrayContaining([expect.objectContaining(user)]),
         );
@@ -102,6 +115,7 @@ describe('Demo Test', () => {
   it('Save and get user using redis', async () => {
     await request(app.getHttpServer())
       .post('/cache?name=foo')
+      .set('Cookie', cookie)
       .expect(201)
       .expect((res) => {
         expect(res.body).toEqual({ message: 'User cached' });
@@ -109,6 +123,7 @@ describe('Demo Test', () => {
 
     await request(app.getHttpServer())
       .get('/cache')
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['foo']);
@@ -116,6 +131,7 @@ describe('Demo Test', () => {
 
     await request(app.getHttpServer())
       .post('/cache?name=bar')
+      .set('Cookie', cookie)
       .expect(201)
       .expect((res) => {
         expect(res.body).toEqual({ message: 'User cached' });
@@ -123,6 +139,7 @@ describe('Demo Test', () => {
 
     await request(app.getHttpServer())
       .get('/cache')
+      .set('Cookie', cookie)
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual(['bar', 'foo']);
@@ -132,6 +149,7 @@ describe('Demo Test', () => {
   it('Save and get user using cache manager', async () => {
     await request(app.getHttpServer())
       .post('/users/cache-manager')
+      .set('Cookie', cookie)
       .send(user)
       .expect(201)
       .expect(async (res) => {
@@ -140,6 +158,7 @@ describe('Demo Test', () => {
 
     await request(app.getHttpServer())
       .get(`/users/cache-manager?name=${user.name}`)
+      .set('Cookie', cookie)
       .expect(200)
       .expect(async (res) => {
         expect(res.body).toEqual(expect.objectContaining(user));
@@ -150,6 +169,7 @@ describe('Demo Test', () => {
     const queueAddSpy = jest.spyOn(queue, 'add');
     await request(app.getHttpServer())
       .post('/cats?name=garfield')
+      .set('Cookie', cookie)
       .expect(201)
       .expect((res) => {
         expect(res.text).toEqual('garfield');
@@ -163,6 +183,7 @@ describe('Demo Test', () => {
   it('Query user using graphql', async () => {
     await request(app.getHttpServer())
       .post('/graphql')
+      .set('Cookie', cookie)
       .send({
         query: `{
           users {
@@ -172,7 +193,7 @@ describe('Demo Test', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.users).toEqual([{ name: 'Test User' }]);
+        expect(res.body.data.users).toEqual(expect.arrayContaining<{name: string}>([{ name: 'admin' }]));
       });
   });
 

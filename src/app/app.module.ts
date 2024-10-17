@@ -8,11 +8,10 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { CatModule } from './domain/cat/cat.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import GraphQLJSON from 'graphql-type-json';
-import { join } from 'lodash';
 import { CacheModule } from "@nestjs/cache-manager";
 import { RedisOptions } from "ioredis";
 import { redisStore } from "cache-manager-ioredis-yet";
+import { AuthModule } from "./domain/auth/auth.module";
 
 export const DYNAMIC_MODULES: Record<
   | 'ConfigModule'
@@ -130,6 +129,7 @@ export const DYNAMIC_MODULES: Record<
     DYNAMIC_MODULES['GraphQLModule'],
     UserModule,
     CatModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

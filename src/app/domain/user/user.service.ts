@@ -28,6 +28,14 @@ export class UserService {
     return 'Hello World!';
   }
 
+  async getUserByID(id: number): Promise<UserEntity | null> {
+    return this.userRepository.findOne({ where: { id } });
+  }
+
+  async getUserByName(name: string): Promise<UserEntity | null> {
+    return this.userRepository.findOne({ where: { name } });
+  }
+
   async getUsers(): Promise<UserEntity[]> {
     return this.userRepository.find();
   }

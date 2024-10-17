@@ -4,6 +4,11 @@ import { UserService } from '../../domain/user/user.service';
 import { UserEntity } from '../../domain/user/user.entity';
 import { CreateUserInput } from './create-user.input';
 import { PubSub } from "graphql-subscriptions";
+import { CurrentUser } from "../../domain/auth/current-user.decorator";
+import { AuthUser } from "../../domain/auth/auth-user.type";
+import { UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "../../domain/auth/jwt-auth.guard";
+
 
 @Resolver()
 export class UserResolver {
@@ -11,6 +16,13 @@ export class UserResolver {
     private readonly userService: UserService,
     private readonly pubSub: PubSub,
   ) {}
+
+  @Query(() => UserDTO)
+  async me(
+    @CurrentUser() currentUser: AuthUser
+  ) {
+    return await this.userService.getUserByID(currentUser.id);
+  }
 
   @Query(() => [UserDTO])
   async users(): Promise<UserEntity[]> {

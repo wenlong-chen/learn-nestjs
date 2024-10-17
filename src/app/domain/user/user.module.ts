@@ -18,5 +18,6 @@ import { UserResolver } from '../../application/user/user.resolver';
       useValue: new PubSub(),
     },
   ],
+  exports: [UserService],
 })
 export class UserModule {}
