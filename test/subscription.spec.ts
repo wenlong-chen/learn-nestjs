@@ -13,10 +13,10 @@ import { AppModule, DYNAMIC_MODULES } from '../src/app/app.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisService } from '../src/app/infrastructure/redis/redis.service';
 import { getQueueToken } from '@nestjs/bull';
-import { supertestWs } from "supertest-graphql";
-import gql from "graphql-tag";
-import * as request from "supertest";
-import { UserService } from "../src/app/domain/user/user.service";
+import { supertestWs } from 'supertest-graphql';
+import gql from 'graphql-tag';
+import * as request from 'supertest';
+import { UserService } from '../src/app/domain/user/user.service';
 
 describe('Subscription Test', () => {
   let app: INestApplication;
@@ -76,8 +76,11 @@ describe('Subscription Test', () => {
       .post('/auth/login')
       .send({ username: 'admin', password: 'admin' })
       .expect(201)
-      .then(res => {
-        cookie = res.header['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      .then((res) => {
+        cookie = res.header['set-cookie'][0]
+          .split(',')
+          .map((item) => item.split(';')[0])
+          .join(';');
       });
   });
 
@@ -86,14 +89,13 @@ describe('Subscription Test', () => {
     await app.close();
   });
 
-
   it('Subscribe to user created event', async () => {
     const sub = await supertestWs(app.getHttpServer()).subscribe(gql`
-        subscription {
-            userCreated {
-                name
-            }
+      subscription {
+        userCreated {
+          name
         }
+      }
     `);
 
     await request(app.getHttpServer())

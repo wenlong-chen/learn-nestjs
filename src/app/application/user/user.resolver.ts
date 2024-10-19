@@ -1,14 +1,11 @@
-import { Args, Mutation, Resolver, Query, ResolveField, Parent, Subscription } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query, Subscription } from '@nestjs/graphql';
 import { UserDTO } from './user.dto';
 import { UserService } from '../../domain/user/user.service';
 import { UserEntity } from '../../domain/user/user.entity';
 import { CreateUserInput } from './create-user.input';
-import { PubSub } from "graphql-subscriptions";
-import { CurrentUser } from "../../domain/auth/current-user.decorator";
-import { AuthUser } from "../../domain/auth/auth-user.type";
-import { UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../../domain/auth/jwt-auth.guard";
-
+import { PubSub } from 'graphql-subscriptions';
+import { CurrentUser } from '../../domain/auth/current-user.decorator';
+import { AuthUser } from '../../domain/auth/auth-user.type';
 
 @Resolver()
 export class UserResolver {
@@ -18,9 +15,7 @@ export class UserResolver {
   ) {}
 
   @Query(() => UserDTO)
-  async me(
-    @CurrentUser() currentUser: AuthUser
-  ) {
+  async me(@CurrentUser() currentUser: AuthUser) {
     return await this.userService.getUserByID(currentUser.id);
   }
 
@@ -29,7 +24,7 @@ export class UserResolver {
     return await this.userService.getUsers();
   }
 
-  @Subscription(() => UserDTO, {resolve: value => value})
+  @Subscription(() => UserDTO, { resolve: (value) => value })
   userCreated() {
     return this.pubSub.asyncIterator('userCreated');
   }

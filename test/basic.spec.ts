@@ -14,7 +14,7 @@ import { Queue } from 'bull';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { createCache, memoryStore } from 'cache-manager';
 import { CreateUserInput } from '../src/app/application/user/create-user.input';
-import { UserService } from "../src/app/domain/user/user.service";
+import { UserService } from '../src/app/domain/user/user.service';
 
 describe('Demo Test', () => {
   let app: INestApplication;
@@ -72,8 +72,11 @@ describe('Demo Test', () => {
       .post('/auth/login')
       .send({ username: 'admin', password: 'admin' })
       .expect(201)
-      .then(res => {
-        cookie = res.header['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      .then((res) => {
+        cookie = res.header['set-cookie'][0]
+          .split(',')
+          .map((item) => item.split(';')[0])
+          .join(';');
       });
   });
 
@@ -193,8 +196,9 @@ describe('Demo Test', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.users).toEqual(expect.arrayContaining<{name: string}>([{ name: 'admin' }]));
+        expect(res.body.data.users).toEqual(
+          expect.arrayContaining<{ name: string }>([{ name: 'admin' }]),
+        );
       });
   });
-
 });

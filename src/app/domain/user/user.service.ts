@@ -5,8 +5,8 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 import { UserEntity } from './user.entity';
 import { RedisService } from '../../infrastructure/redis/redis.service';
-import { CreateUserInput } from "../../application/user/create-user.input";
-import { PubSub } from "graphql-subscriptions";
+import { CreateUserInput } from '../../application/user/create-user.input';
+import { PubSub } from 'graphql-subscriptions';
 
 @Injectable()
 export class UserService {

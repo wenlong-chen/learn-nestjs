@@ -1,14 +1,12 @@
-import { ExecutionContext, Injectable } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { AuthUser } from "./auth-user.type";
-import { AuthService } from "./auth.service";
-import { AUTH_COOKIE_NAME } from "./constants";
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthUser } from './auth-user.type';
+import { AuthService } from './auth.service';
+import { AUTH_COOKIE_NAME } from './constants';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  constructor(
-    private authService: AuthService
-  ) {
+  constructor(private authService: AuthService) {
     super();
   }
 

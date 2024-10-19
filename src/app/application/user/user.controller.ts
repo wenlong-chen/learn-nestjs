@@ -1,12 +1,9 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { Request } from 'express';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '../../domain/user/user.service';
-import { UserDTO } from './user.dto';
-import { CreateUserInput } from "./create-user.input";
-import { JwtAuthGuard } from "../../domain/auth/jwt-auth.guard";
-import { CurrentUser } from "../../domain/auth/current-user.decorator";
-import { AuthUser } from "../../domain/auth/auth-user.type";
-import { AuthGuard } from "@nestjs/passport";
+import { CreateUserInput } from './create-user.input';
+import { JwtAuthGuard } from '../../domain/auth/jwt-auth.guard';
+import { CurrentUser } from '../../domain/auth/current-user.decorator';
+import { AuthUser } from '../../domain/auth/auth-user.type';
 
 @Controller()
 export class UserController {
@@ -82,9 +79,7 @@ export class UserController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard)
-  async me(
-    @CurrentUser() user: AuthUser
-  ) {
+  async me(@CurrentUser() user: AuthUser) {
     return this.userService.getUserByID(user.id);
   }
 }

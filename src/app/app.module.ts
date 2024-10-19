@@ -8,10 +8,10 @@ import { RedisModule } from './infrastructure/redis/redis.module';
 import { CatModule } from './domain/cat/cat.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { CacheModule } from "@nestjs/cache-manager";
-import { RedisOptions } from "ioredis";
-import { redisStore } from "cache-manager-ioredis-yet";
-import { AuthModule } from "./domain/auth/auth.module";
+import { CacheModule } from '@nestjs/cache-manager';
+import { RedisOptions } from 'ioredis';
+import { redisStore } from 'cache-manager-ioredis-yet';
+import { AuthModule } from './domain/auth/auth.module';
 
 export const DYNAMIC_MODULES: Record<
   | 'ConfigModule'
@@ -101,9 +101,7 @@ export const DYNAMIC_MODULES: Record<
       store: redisStore,
       host: configService.get<string>('REDIS_HOST'),
       port: configService.get<number | undefined>('REDIS_PORT'),
-      tls: configService.get<string | undefined>('REDIS_TLS')
-        ? {}
-        : undefined,
+      tls: configService.get<string | undefined>('REDIS_TLS') ? {} : undefined,
     }),
     isGlobal: true,
     imports: [ConfigModule],

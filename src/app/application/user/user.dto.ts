@@ -1,26 +1,26 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Field, Int, ObjectType } from '@nestjs/graphql';
 import GraphQLJSON from 'graphql-type-json';
 
 @ObjectType()
 export class UserDTO {
-  @Field((type) => Int)
+  @Field(() => Int)
   id: number;
 
-  @Field((type) => String)
+  @Field(() => String)
   name: string;
 
-  @Field((type) => GraphQLJSON)
+  @Field(() => GraphQLJSON)
   jsonColumn: Record<string, unknown>;
 
-  @Field((type) => [GraphQLJSON])
+  @Field(() => [GraphQLJSON])
   arrayColumn: Record<string, unknown>[];
 
-  @Field((type) => String)
+  @Field(() => String)
   varcharColumn: string;
 
-  @Field((type) => String)
+  @Field(() => String)
   uuidColumn: string;
 
-  @Field((type) => Boolean)
+  @Field(() => Boolean)
   booleanColumn: boolean;
 }
