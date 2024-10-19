@@ -1,0 +1,45 @@
+### Get cache
+GET http://localhost:3001/cache
+
+### Add element to cache
+POST http://localhost:3001/cache?name=tom
+
+### Get cache
+GET http://localhost:3001/cache
+
+### Enqueue cat
+POST http://localhost:3001/cats?name=fluffy
+
+### Enqueue cat
+POST http://localhost:3001/cats?name=garfield
+
+### Get cats
+GET http://localhost:3001/cats
+
+### Create user
+POST http://localhost:3001/users
+Content-Type: application/json
+
+{
+  "name": "hello",
+  "jsonColumn": {"foo": "bar"},
+  "arrayColumn": [{"foo": "bar"}, {"foo": "baz"}],
+  "varcharColumn": "",
+  "booleanColumn": false,
+  "uuidColumn": "c017d8c5-d9a1-43ee-9e08-ceac8012fee2"
+}
+
+### Login
+# curl -X POST http://localhost:3001/auth/login -d '{"username": "john", "password": "changeme"}' -H "Content-Type: application/json"
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+  "username": "tom",
+  "password": "tom"
+}
+
+### Get me
+GET http://localhost:3001/me
+Content-Type: application/json
+Cookie: auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9tIiwic3ViIjozLCJpYXQiOjE3MjkxNzI1MTMsImV4cCI6MTcyOTE3NjExM30.8VDcQ-NV6jIpyd2rjE6eInwGa4RCm96AV6LV1xJpHYo; Path=/; HttpOnly
